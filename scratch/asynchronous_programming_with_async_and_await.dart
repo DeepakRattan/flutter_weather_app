@@ -7,12 +7,13 @@ void main() {
 
 // After execution ,task1 and task 3 completes immediately but task2 completes after
 // a delay of 3 seconds .
-// By adding async keyword ,we have access to await .
+// By adding async keyword ,we have access to keyword await .
 void performTasks() async {
   task1();
   // task 3 will be execute after 3 seconds if it follows task2()
   // task2() is asynchronous method .
-  // await here means we need to wait for task2 to complete
+  // await here means we need to wait for task2 to complete .Next line of code will
+  // be executed after task is completed .
   String res = await task2();
   // task3 relies on task2
   task3(res);
