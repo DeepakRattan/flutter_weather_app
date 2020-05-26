@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutterweatherapp/screens/location_screen.dart';
 import 'package:flutterweatherapp/services/location.dart';
 import 'package:flutterweatherapp/services/networking.dart';
 import 'package:http/http.dart' as http;
@@ -45,14 +47,15 @@ class _LoadingScreenState extends State<LoadingScreen> {
     NetworkHelper networkHelper = NetworkHelper(
         'https://samples.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey');
     var weatherData = await networkHelper.getData();
-    var temp = weatherData['main']['temp'];
-    print('Temp : $temp');
-
-    var id = weatherData['weather'][0]['id'];
-    print('id : $id');
-
-    var name = weatherData['name'];
-    print('city name : $name');
+    //Navigate to LocationScreen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return LocationScreen();
+        },
+      ),
+    );
   }
 
   /*void getData() async {
@@ -85,6 +88,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
   // 2 . build method calls every time , our widgets rebuild .
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Center(
+        // Loading indicator
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
+        ),
+      ),
+    );
   }
 }
