@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutterweatherapp/services/location.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -27,15 +29,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   and, when it is done, continue on to the next line of code. */
 
   void getLocation() async {
-    /* To query the current location of the device simply make a call to the
-    getCurrentPosition method which is asynchronous .
-    We have added async keyword to getLocation() method because it give access to await keyword
-    which says wait until this completes before we continue doing anything .
-
-    */
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-    print(position);
+    Location location = Location();
+    /* We can only await for methods that return Future.Therefore return type
+     of getCurrentLocation() method is Future*/
+    await location.getCurrentLocation();
+    print(location.latitude);
+    print(location.longitude);
   }
 
   // 2 . build method calls every time , our widgets rebuild .
