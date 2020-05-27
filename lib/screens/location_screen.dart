@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterweatherapp/screens/city_screen.dart';
 import 'package:flutterweatherapp/services/weather.dart';
 import 'package:flutterweatherapp/utilities/constants.dart';
 
@@ -20,7 +21,6 @@ class _LocationScreenState extends State<LocationScreen> {
   String weatherMessage;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // Accessing locationWeather data of Location screen from LocationScreenState
     // We can access widget object inside every single state object
@@ -30,13 +30,21 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void updateUI(var weatherData) {
     setState(() {
-      double temp = weatherData['main']['temp'];
-      temperature = temp.toInt();
-      var condition = weatherData['weather'][0]['id'];
-      weatherIcon = weatherModel.getWeatherIcon(condition);
-      weatherMessage = weatherModel.getMessage(temperature);
-      cityName = weatherData['name'];
-      print(temperature);
+      if (weatherData == null) {
+        temperature = 0;
+        weatherIcon = '';
+        weatherMessage = 'Unable to get weather data';
+        cityName = '';
+        return; // Exit from the method
+      } else {
+        dynamic temp = weatherData['main']['temp'];
+        temperature = temp.toInt();
+        var condition = weatherData['weather'][0]['id'];
+        weatherIcon = weatherModel.getWeatherIcon(condition);
+        weatherMessage = weatherModel.getMessage(temperature);
+        cityName = weatherData['name'];
+        print(temperature);
+      }
     });
   }
 
@@ -62,14 +70,36 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var weatherData = await weatherModel.getLocationWeather();
+                      updateUI(weatherData);
+                    },
                     child: Icon(
                       Icons.near_me,
                       size: 50.0,
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      // Return type of Push is Future and that value comes when we navigate back
+                      // from another screen to this screen .In our code,when we navigate back from
+                      // City screen to Location screen ,we get the value
+                      var typedName = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CityScreen();
+                          },
+                        ),
+                      );
+                      print('city : $typedName');
+                      if (typedName != null) {
+                        var weatherData =
+                            await weatherModel.getCityWeather(typedName);
+                        print('location screen : $weatherData');
+                        updateUI(weatherData);
+                      }
+                    },
                     child: Icon(
                       Icons.location_city,
                       size: 50.0,
@@ -82,7 +112,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '$temperature',
+                      '$temperature°',
                       style: kTempTextStyle,
                     ),
                     Text(
@@ -92,12 +122,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(right: 15.0),
-                child: Text(
-                  "$weatherMessage in $cityName",
-                  textAlign: TextAlign.right,
-                  style: kMessageTextStyle,
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 15.0),
+                  child: Center(
+                    child: Text(
+                      "$weatherMessage in $cityName",
+                      textAlign: TextAlign.right,
+                      style: kMessageTextStyle,
+                    ),
+                  ),
                 ),
               ),
             ],

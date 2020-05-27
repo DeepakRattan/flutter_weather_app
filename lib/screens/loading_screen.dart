@@ -6,9 +6,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterweatherapp/screens/location_screen.dart';
 import 'package:flutterweatherapp/services/location.dart';
 import 'package:flutterweatherapp/services/networking.dart';
+import 'package:flutterweatherapp/services/weather.dart';
 import 'package:http/http.dart' as http;
 
-const apiKey = '8b270f61b3c21e4640352292a0dc674a';
+const loading_screen = 'Loading Screen';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -38,15 +39,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   and, when it is done, continue on to the next line of code. */
 
   void getLocationData() async {
-    Location location = Location();
-    /* We can only await for methods that return Future.Therefore return type
-     of getCurrentLocation() method is Future*/
-    await location.getCurrentLocation();
-    latitude = location.latitude;
-    longitude = location.longitude;
-    NetworkHelper networkHelper = NetworkHelper(
-        'https://samples.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey');
-    var weatherData = await networkHelper.getData();
+    /* getLocationWeather() method returns a FUTURE .So it can be completed in any time.
+    But we need to use the result of this inside variable weatherData .So we are using
+    await keyword for geLocation() method .
+     */
+    var weatherData = await WeatherModel().getLocationWeather();
+    print('$loading_screen : $weatherData');
     //Navigate to LocationScreen
     Navigator.push(
       context,
